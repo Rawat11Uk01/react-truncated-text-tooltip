@@ -74,18 +74,9 @@ export const TruncatedText: React.FC<TruncatedTextProps> = ({
       "group-hover:pointer-events-auto",
     ];
 
-    // Position-specific classes with automatic repositioning for top clipping
+    // Position-specific classes
     const positionClasses = {
-      top: [
-        "bottom-full",
-        "left-1/2",
-        "-translate-x-1/2",
-        "mb-2",
-        "group-hover:-translate-y-1",
-        // Automatic repositioning when clipped by viewport
-        "group-hover:[transform:translateX(-50%)_translateY(calc(100%_+_0.5rem))]",
-        "group-hover:[&:not([data-clipped])]:translate-y-1",
-      ],
+      top: ["bottom-full", "left-1/2", "-translate-x-1/2", "mb-2"],
       bottom: [
         "top-full",
         "left-1/2",
@@ -126,7 +117,6 @@ export const TruncatedText: React.FC<TruncatedTextProps> = ({
         "border-l-transparent",
         "border-r-transparent",
         "border-t-gray-900",
-        "group-hover:[&:not([data-clipped])]:hidden",
       ],
       bottom: [
         "bottom-full",
