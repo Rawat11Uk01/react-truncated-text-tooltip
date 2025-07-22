@@ -12,7 +12,7 @@ function App() {
             content="React Truncated Text Tooltip Component Demo"
             tag="h1"
             lines={1}
-            tooltipPosition="top"
+            tooltipPosition="bottom"
             className="text-4xl font-bold text-primary mb-4"
           />
           <p className="text-muted-foreground text-lg">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 
 export interface TruncatedTextProps {
@@ -39,8 +39,28 @@ export const TruncatedText: React.FC<TruncatedTextProps> = ({
   tooltipStyle,
   tag: Tag = "p",
 }) => {
+  const textRef = useRef<HTMLElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
   const displayTooltipText =
     tooltipText || (typeof content === "string" ? content : "");
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (textRef.current) {
+        // Check if content is overflowing by comparing scroll height with client height
+        const isTextOverflowing =
+          textRef.current.scrollHeight > textRef.current.clientHeight;
+        setIsOverflowing(isTextOverflowing);
+      }
+    };
+
+    checkOverflow();
+
+    // Recheck on window resize
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [content, lines]);
 
   const truncatedStyles: React.CSSProperties = {
     display: "-webkit-box",
@@ -74,9 +94,14 @@ export const TruncatedText: React.FC<TruncatedTextProps> = ({
       "group-hover:pointer-events-auto",
     ];
 
-    // Position-specific classes
     const positionClasses = {
-      top: ["bottom-full", "left-1/2", "-translate-x-1/2", "mb-2"],
+      top: [
+        "bottom-full",
+        "left-1/2",
+        "-translate-x-1/2",
+        "mb-2",
+        "group-hover:-translate-y-1",
+      ],
       bottom: [
         "top-full",
         "left-1/2",
@@ -156,10 +181,14 @@ export const TruncatedText: React.FC<TruncatedTextProps> = ({
     return [...baseArrowClasses, ...arrowClasses[tooltipPosition]];
   };
 
-  // Only show tooltip if there's content to display
-  if (!displayTooltipText) {
+  // If text is not overflowing or no tooltip content, render without tooltip
+  if (!isOverflowing || !displayTooltipText) {
     return (
-      <Tag className={cn(truncatedClassName)} style={truncatedStyles}>
+      <Tag
+        ref={textRef}
+        className={cn(truncatedClassName)}
+        style={truncatedStyles}
+      >
         {content}
       </Tag>
     );
@@ -167,11 +196,15 @@ export const TruncatedText: React.FC<TruncatedTextProps> = ({
 
   return (
     <div className={cn("relative inline-block group", className)} style={style}>
-      <Tag className={cn(truncatedClassName)} style={truncatedStyles}>
+      <Tag
+        ref={textRef}
+        className={cn(truncatedClassName)}
+        style={truncatedStyles}
+      >
         {content}
       </Tag>
 
-      {/* Tooltip */}
+      {/* Tooltip - only rendered when text is overflowing */}
       <div
         className={cn(getTooltipClasses(), tooltipClassName)}
         style={tooltipStyle}
